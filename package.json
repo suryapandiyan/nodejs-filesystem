@@ -1,14 +1,16 @@
 {
   "dependencies": {
-    "express": "^4.18.2"
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "moment": "^2.29.4"
   },
   "name": "nodejs-filesystem",
   "version": "0.0.1",
   "description": "filesystem",
   "main": "index.js",
-  "devDependencies": {},
   "scripts": {
-    "start":"node index.js",
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "surya",

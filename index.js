@@ -1,19 +1,72 @@
-const express = require('express')
-const http=require('http')
-const fs = require('fs/promises');
+ const express = require("express");
+ const app = express();
+ require("dotenv").config();
+ const cors = require("cors");
+ const fs = require("fs");
+ const moment = require("moment");
 
- async function test() {
-    try {
-        const stats = await fs.stat("C:/Users/91934/Desktop/SURYA/TASK/nodejs-filesystem/10-08-2023:09:53");
-        console.log(stats.isFile());  
-    } catch (err) {
-        console.error(err);
-    }
-    console.log(stats.ctime);
-} 
-const app = http.createServer((request, response) => {
-    response.end(test());
-})
-const PORT = 3001;
-app.listen(PORT);
-console.log(`server running on port ${PORT}`);
+ 
+ app.use(cors({ origin: "*" }));
+
+ 
+ app.use(express.json());
+ app.use(express.urlencoded({ extended: true }));
+
+ app.get("/", (req, res) => {
+   res.status(200).end("welcome!");
+ });
+
+ app.get("/createfile/:name", (req, res) => {
+   const foldername = req.params.name;
+   const dateTimeFormat = "YYYY-MM-DD_HH-mm-ss";
+
+   try {
+     fs.mkdir(`${__dirname}/${foldername}`, (err) => {
+       const content = new Date().toTimeString();
+       const fileName = `${moment().format(dateTimeFormat)}.txt`;
+
+       if (err) {
+         throw err;
+       }
+
+       fs.writeFile(
+         `${__dirname}/${foldername}/${fileName}`,
+         content,
+         (err) => {
+           if (err) {
+             throw err;
+           }
+           res.status(200).send(`${fileName}   ---new file created`);
+         }
+       );
+     });
+   } catch (err) {
+     res.status(500).send(err);
+   }
+ });
+
+ app.get("/readfile/:name", (req, res) => {
+   const foldername = req.params.name;
+   const fileName = req.query.filename;
+
+   try {
+     fs.readFile(
+       `${__dirname}/${foldername}/${fileName}`,
+       "utf8",
+       (err, data) => {
+           if (err) {
+           console.log("cannot read the file")
+           throw err;
+         }
+         res.status(200).send(data,"the content is here");
+       }
+     );
+   } catch (err) {
+     res.status(500).send(err);
+   }
+ });
+
+ const PORT = process.env.PORT || 3001;
+ app.listen(PORT, () => {
+   console.log(`server listening on PORT ${PORT}`);
+ });
